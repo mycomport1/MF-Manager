@@ -1,30 +1,25 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch
-} from 'react-router-dom';
-import ClientList from './ClientList';
-import LoanApplication from './LoanApplication';
-import RepaymentSchedule from './RepaymentSchedule';
 
-const Routes = () => (
-  <Switch>
-    <Route path="/client-list" component={ClientList} />
-    <Route path="/loan-application" component={LoanApplication} />
-    <Route path="/repayment-schedule" component={RepaymentSchedule} />
-    <Route exact path="/" component={ClientList} />
-  </Switch>
-);
+const ClientList = React.memo(function ClientList(props) {
+  // Component implementation
+});
 
-const App = () => {
+export default ClientList;
+```
+
+```jsx
+import React, { useMemo } from 'react';
+
+function LoanApplication({ interestRate, principal }) {
+  const monthlyPayment = useMemo(() => {
+    // Assume calculateMonthlyPayment is an expensive function
+    return calculateMonthlyPayment(interestRate, principal);
+  }, [interestRate, principal]);
+
   return (
-    <Router>
-      <div>
-        <Routes />
-      </div>
-    </Router>
+    <div>
+      {/* Use the memoized value */}
+      Your monthly payment is {monthlyPayment}
+    </div>
   );
 }
-
-export default App;
