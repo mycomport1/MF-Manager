@@ -9,6 +9,7 @@ export const useClients = () => useContext(ClientsContext);
 export const ClientsProvider = ({ children }) => {
     const [clients, setClients] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null); // Added state to store error information
 
     useEffect(() => {
         const fetchClients = async () => {
@@ -19,6 +20,7 @@ export const ClientsProvider = ({ children }) => {
                 setClients(response.data);
             } catch (error) {
                 console.error("Failed to fetch clients:", error);
+                setError(error); // Storing error to display or use later
             } finally {
                 setIsLoading(false);
             }
@@ -26,27 +28,29 @@ export const ClientsProvider = ({ children }) => {
         fetchClients();
     }, []);
 
+    // Passing the error state through the context
     return (
-        <ClientsContext.Provider value={{ clients, isLoading }}>
+        <ClientsContext.Provider value={{ clients, isLoading, error }}>
             {children}
         </ClientsContext.Provider>
     );
 };
 ```
-
 ```jsx
 // ClientList.js
 import React from 'react';
 import { useClients } from './ClientsContext';
 
 function ClientList() {
-    const { clients, isLoading } = useClients();
+    const { clients, isLoading, error } = useClients();
 
     return (
         <div>
             <h2>Client List</h2>
             {isLoading ? (
                 <p>Loading clients...</p>
+            ) : error ? ( // Handling error display
+                <p>Could not load clients: {error.message}</p>
             ) : (
                 <ul>
                     {clients.map(client => (
@@ -61,22 +65,3 @@ function ClientList() {
 }
 
 export default ClientList;
-```
-
-```jsx
-// App.js or similar
-import React from 'react';
-import { ClientsProvider } from './ClientsContext';
-import ClientList from './ClientList';
-
-function App() {
-  return (
-    <ClientsProvider>
-      <div className="App">
-        <ClientList />
-      </div>
-    </ClientsProvider>
-  );
-}
-
-export default App;
