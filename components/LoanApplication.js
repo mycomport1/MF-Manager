@@ -8,18 +8,58 @@ const LoanApplication = () => {
     loanDuration: '',
   });
 
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    let isValid = true;
+    let errors = {};
+
+    if (!formData.email.includes("@")) {
+      errors.email = "Invalid email format";
+      isValid = false;
+    }
+
+    if (isNaN(formData.loanAmount) || formData.loanAmount <= 0) {
+      errors.loanAmount = "Loan amount must be a positive number";
+      isValid = false;
+    }
+
+    if (isNaN(formData.loanDuration) || formData.loanDuration <= 0) {
+      errors.loanDuration = "Loan duration must be a positive number";
+      isValid = false;
+    }
+
+    setErrors(errors);
+    return isValid;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+    // Clear error messages as user corrects them
+    if (!!errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Loan Application Submitted');
-    console.log(formData);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      alert('Loan Application Submitted');
+      console.log(formData);
+      setLoading(false);
+    }, 2000); // Simulate a 2-second loading/process time
   };
 
   return (
@@ -47,6 +87,7 @@ const LoanApplication = () => {
             onChange={handleChange}
             required
           />
+          {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
         </div>
         <div>
           <label htmlFor="loanAmount">Loan Amount:</label>
@@ -58,6 +99,7 @@ const LoanApplication = () => {
             onChange={handleChange}
             required
           />
+          {errors.loanAmount && <p style={{ color: 'red' }}>{errors.loanAmount}</p>}
         </div>
         <div>
           <label htmlFor="loanDuration">Loan Duration (Months):</label>
@@ -69,8 +111,11 @@ const LoanApplication = () => {
             onChange={handleChange}
             required
           />
+          {errors.loanDuration && <p style={{ color: 'red' }}>{errors.loanDuration}</p>}
         </div>
-        <button type="submit">Submit Application</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Submitting...' : 'Submit Application'}
+        </button>
       </form>
     </div>
   );
