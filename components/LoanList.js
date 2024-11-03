@@ -1,47 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_ENDPOINT = process.env.REACT_APP_API_URL;
 
-let loansCache = null;
+let cachedLoans = null;
 
-const LoanList = () => {
-  const [loans, setLoans] = useState([]);
+const LoanListing = () => {
+  const [loanList, setLoanList] = useState([]);
 
-  const fetchLoans = async () => {
-    if (loansCache) {
-      setLoans(loansCache);
+  const loadLoans = async () => {
+    if (cachedLoans) {
+      setLoanList(cachedLoans);
       return;
     }
     try {
-      const response = await axios.get(`${API_URL}/loans`);
-      loansCache = response.data;
-      setLoans(response.data);
+      const { data: loansData } = await axios.get(`${API_ENDPOINT}/loans`);
+      cachedLoans = loansData;
+      setLoanList(loansData);
     } catch (error) {
-      console.error("Error fetching loans:", error);
+      console.error("Error loading loans:", error);
     }
   };
 
   useEffect(() => {
-    fetchLoans();
+    loadLoans();
   }, []);
 
   return (
     <div>
-      <h2>List of Loans</h2>
-      {loans.length > 0 ? (
+      <h2>Loan Portfolio</h2>
+      {loanList.length > 0 ? (
         <ul>
-          {loans.map((loan) => (
+          {loanList.map((loan) => (
             <li key={loan.id}>
               {loan.name} - Amount: {loan.amount}
             </li>
           ))}
         </ul>
       ) : (
-        <p>No loans available.</p>
+        <p>No loans found.</p>
       )}
     </div>
   );
 };
 
-export default LoanList;
+export default LoanListing;
