@@ -4,32 +4,32 @@ import axios from 'axios';
 const LoanDetailsComponent = ({ loanId }) => {
   const [loanDetails, setLoanDetails] = useState(null);
   const [repaymentHistory, setRepaymentHistory] = useState([]);
-
-  const fetchLoanDetails = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/loans/${loanId}`);
-      setLoanDetails(response.data);
-    } catch (error) {
-      console.error('Error fetching loan details', error);
-    }
-  };
-
-  const fetchRepaymentHistory = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/loans/${loanId}/repayments`);
-      setRepaymentHistory(response.data);
-    } catch (error) {
-      console.error('Error fetching repayment history', error);
-    }
-  };
+  const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
-    fetchLoanDetails();
-    fetchRepaymentHistory();
+    const fetchData = async () => {
+      try {
+        const detailsResponse = await axios.get(
+          `${process.env.REACT_APP_API_URL}/loans/${loanId}`
+        );
+        setLoanDetails(detailsResponse.data);
+
+        const repaymentResponse = await axios.get(
+          `${process.env.REACT_APP_API_URL}/loans/${loanId}/repayments`
+        );
+        setRepaymentHistory(repaymentResponse.data);
+      } catch (error) {
+        console.error('Error fetching data', error);
+        setFetchError('Failed to fetch data. Please try again later.');
+      }
+    };
+
+    fetchData();
   }, [loanId]);
 
   return (
     <div>
+      {fetchError && <p>{fetchError}</p>}
       {loanDetails && (
         <div>
           <h2>Loan Details</h2>
