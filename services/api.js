@@ -34,7 +34,7 @@ export const clients = {
   },
   async remove(id) {
     return await apiRequest('delete', `/clients/${id}`);
-  }
+  },
 };
 
 export const loans = {
@@ -52,7 +52,7 @@ export const loans = {
   },
   async remove(id) {
     return await apiRequest('delete', `/loans/${id}`);
-  }
+  },
 };
 
 export const repayments = {
@@ -61,5 +61,5 @@ export const repayments = {
   },
   async add(loanId, repaymentData) {
     return await apiRequest('post', `/loans/${loanId}/repayments`, repaymentData);
-  }
+  },
 };
